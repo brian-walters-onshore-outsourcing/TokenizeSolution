@@ -14,12 +14,30 @@ Welcome to your new app.
 
 @code
 {
+
+    string AddOne(string s)
+    {
+        System.Text.StringBuilder sb = new System.Text.StringBuilder(s);
+        for (int i = 0; i<sb.Length;i++)
+        {
+            sb[i]++;
+
+        }
+        return sb.ToString();
+    }
     void Alert(string s)
     {
         ijsr.InvokeAsync<int>("BlazorAlert", s);
     }
-    void OnEdgeHit(Counter it)
+    void OnEdgeHit(Counter it, Counter.Edge e)
     {
-        Console.WriteLine($"in the main component:{it.Name}");
+        Console.WriteLine($"in the main component:{it.Name}  at edge {e}");
+        if (e==Counter.Edge.Left)
+        {
+            it.LeftData += it.RightData;
+            it.RightData = AddOne(it.RightData);
+            it.CurrentValue = 1000;
+            it.MoveLeft();
+        }
     }
 }

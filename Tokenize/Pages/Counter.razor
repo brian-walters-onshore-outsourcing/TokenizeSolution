@@ -86,10 +86,10 @@
         }
     }
 
-    [Parameter] public EventCallback<Counter> OnCurrentChanged { get; set; }
-    [Parameter] public EventCallback<Counter> OnLeftItemChanged { get; set; }
-    [Parameter] public EventCallback<Counter> OnRightItemChanged { get; set; }
-    [Parameter] public EventCallback<Counter> OnEdgeHit { get; set; }
+    [Parameter] public Action<Counter,int,int> OnCurrentChanged { get; set; }
+    [Parameter] public Action<Counter,string,string> OnLeftItemChanged { get; set; }
+    [Parameter] public Action<Counter,string,string> OnRightItemChanged { get; set; }
+    [Parameter] public Action<Counter,Edge> OnEdgeHit { get; set; }
 
     [Parameter] public string Name { get; set; }
 
@@ -124,7 +124,7 @@
                 currentCount = value;
             }
             StateHasChanged();
-            OnCurrentChanged.InvokeAsync(this);
+            OnCurrentChanged?.Invoke(this,oldValue,currentCount);
         }
     }
     [Parameter] public string LeftData
@@ -155,19 +155,24 @@
     }
     public void Increment()
     {
-
+        IncrementCount();
     }
     public void Decrement()
     {
-
+        DecrementCount();
     }
-    public void Up()
+    public void MoveRight()
     {
-
+        UpCount();
     }
-    public void Down()
+    public void MoveLeft()
     {
+        DownCount();
+    }
 
+    public void MoveStop()
+    {
+        StopCount();
     }
     #endregion
 
@@ -269,8 +274,8 @@
             {
                 theTimer.Enabled = false;
                 Console.WriteLine("Edge Hit up Before");
-                OnEdgeHit.InvokeAsync(this);
-                 Console.WriteLine("Edge Hit up after");
+                OnEdgeHit?.Invoke(this,Edge.Right );
+                Console.WriteLine("Edge Hit up after");
 
             }
 
@@ -281,10 +286,10 @@
             if (currentCount <= 0)
             {
                 theTimer.Enabled = false;
-                 Console.WriteLine("Edge Hit down before");
+                Console.WriteLine("Edge Hit down before");
 
-                OnEdgeHit.InvokeAsync(this);
-                       Console.WriteLine("Edge Hit down after");
+                OnEdgeHit?.Invoke(this,Edge.Left);
+                Console.WriteLine("Edge Hit down after");
 
             }
 
@@ -337,7 +342,7 @@
         if (1000 > currentCount)
         {
             currentCount++;
-            OnCurrentChanged.InvokeAsync (this);
+            OnCurrentChanged?.Invoke (this,currentCount - 1, currentCount);
             GetWidthWithRefresh();
         }
 
@@ -349,7 +354,7 @@
         if (0 < currentCount)
         {
             currentCount--;
-            OnCurrentChanged.InvokeAsync (this);
+            OnCurrentChanged?.Invoke (this,currentCount + 1, currentCount);
             GetWidthWithRefresh();
         }
 
