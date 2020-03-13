@@ -20,6 +20,10 @@
         <a class="dismiss">🗙</a>
     </div>
     <script>
+        window.BlazorAlert = (s) => {
+            window.alert(s);
+            return 0;
+        }
         window.getouterwidth = () => {
             //alert("getouterwidth");
 

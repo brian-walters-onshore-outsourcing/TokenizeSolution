@@ -1,7 +1,25 @@
 ﻿@page "/counter"
+@inject IJSRuntime  ijsr
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+<Counter  ShowButtons="true" CurrentValue="200" LeftData="YYY" RightData="X" OnEdgeHit="OnEdgeHit" Name="one" />
+<Counter ShowButtons="true" CurrentValue="400" LeftData="ZZZ" RightData="Q" Name="two" OnEdgeHit="OnEdgeHit"/>
+<Counter ShowButtons="true" CurrentValue="600" LeftData="MMM" RightData="B" Name="three" OnEdgeHit="OnEdgeHit"/>
+<Counter ShowButtons="true" CurrentValue="800" LeftData="ccc" RightData="l" Name="four" OnEdgeHit="OnEdgeHit"/>
+
+@code
+{
+    void Alert(string s)
+    {
+        ijsr.InvokeAsync<int>("BlazorAlert", s);
+    }
+    void OnEdgeHit(Counter it)
+    {
+        Console.WriteLine($"in the main component:{it.Name}");
+    }
+}

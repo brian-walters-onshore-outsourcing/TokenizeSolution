@@ -1,41 +1,41 @@
 ﻿@page "/"
 @using System.Timers;
 @inject IJSRuntime  ijsr
+<div id="outer" style="overflow:hidden" class="@outerborder">
 
-
-
-<h1>Counter</h1>
-<div id="outer"  style="overflow:hidden" class="border-orange">
-
-    <div id="leftitem" class="d-inline border-red">@leftData</div>
-    <div id="rightitem" class="d-inline border-green" 
-         style="position:relative;left:@(right)px;">
+    <div id="leftitem" class="d-inline @leftborder" @onclick="toggle">@leftData</div>
+    <div id="rightitem" class="d-inline @rightborder"
+         style="position:relative;left:@(left)px;">
         @rightData
     </div>
-
-
 </div>
-@**@
-<p>Current count: @currentCount</p>
-@*    <p>Countdown: @Countdown</p>
-    <p>outer width:@outer</p>
-    <p>left width:@leftwidth</p>
-    <p>rigth width:@rightwidth</p>
-    <p>total width:@totalwidth</p>
-    <p>right:@right</p>
 
-    <p>ratio: @ratio</p>*@
 
-<button class="btn btn-primary" @onclick="IncrementCount">Increment</button>
-<button class="btn btn-primary" @onclick="DecrementCount">Decrement</button>
-<button class="btn btn-primary" @onclick="StartCount">Start</button>
-<button class="btn btn-primary" @onclick="StopCount">Stop</button>
-<button class="btn btn-primary" @onclick="OnGetWidth">Get Widths</button>
-<button class="btn btn-primary" @onclick="OnReset">Reset</button>
-<input type="text" value="@currentCount" @oninput="@((ChangeEventArgs __e)=> OnTextChanged(__e))"/>
+<div id="buttons" class="@hiddenornot">
+    <button class="btn btn-primary" @onclick="hide">Hide</button>   
+    <button class="btn btn-primary" @onclick="IncrementCount">Increment</button>
+    <button class="btn btn-primary" @onclick="DecrementCount">Decrement</button>
+    <button class="btn btn-primary" @onclick="UpCount">Up</button>
+    <button class="btn btn-primary" @onclick="DownCount">Down</button>
+    <button class="btn btn-primary" @onclick="StopCount">Stop</button>
+    <button class="btn btn-primary" @onclick="Left">Left</button>
+    <button class="btn btn-primary" @onclick="Right">Right</button>
+</div>
+@*<input type="text" value="@currentCount" @onchange="@((ChangeEventArgs __e)=> OnTextChanged(__e))" />
+    <input type="text" value="@left" @onchange="@((ChangeEventArgs __e)=> OnRightChanged(__e))" />*@
 
 
 @code {
+
+    public enum Edge
+    {
+        Left, Right,
+    }
+
+
+    #region fields
+    private bool updirection = true;
+    private bool buttonsvisible = true;
     private Timer theTimer;
 
     private double outer;
@@ -44,14 +44,138 @@
     private double totalwidth;
 
     private int currentCount = 0;
-    private int Countdown = 10;
-    private string leftData = "XXXXX";
-    private string rightData = "R";
-    private double right = 0;
-    // private int amounttoadd = 1;
+
+    private string leftData = "XX";
+    private string rightData = "B";
+    private double left = 0;
+
     private double ratio;
 
+    private string outerborder = "border-orange";
+    private string leftborder = "border-red";
+    private string rightborder = "border-red";
+    #endregion fields
 
+    #region properties
+    private string hiddenornot
+    {
+        get
+        {
+            if (buttonsvisible)
+            {
+                return "visibilityvisible";
+            }
+            else
+            {
+                return "visibilityhidden";
+            }
+        }
+    }
+    private string visibleornot
+    {
+        get
+        {
+            if (!buttonsvisible)
+            {
+                return "visibilityvisible";
+            }
+            else
+            {
+                return "visibilityhidden";
+            }
+        }
+    }
+
+    [Parameter] public EventCallback<Counter> OnCurrentChanged { get; set; }
+    [Parameter] public EventCallback<Counter> OnLeftItemChanged { get; set; }
+    [Parameter] public EventCallback<Counter> OnRightItemChanged { get; set; }
+    [Parameter] public EventCallback<Counter> OnEdgeHit { get; set; }
+
+    [Parameter] public string Name { get; set; }
+
+    [Parameter]  public bool ShowButtons
+    {
+        get { return buttonsvisible; }
+        set
+        {
+            buttonsvisible = value;
+            StateHasChanged();
+
+        }
+
+    }
+    [Parameter]  public int CurrentValue
+    {
+        get { return currentCount; }
+        set
+        {
+
+            int oldValue = currentCount;
+            if (value <= 0)
+            {
+                currentCount = 0;
+            }
+            else if (value >= 1000)
+            {
+                currentCount = 1000;
+            }
+            else
+            {
+                currentCount = value;
+            }
+            StateHasChanged();
+            OnCurrentChanged.InvokeAsync(this);
+        }
+    }
+    [Parameter] public string LeftData
+    {
+        get { return leftData; }
+        set { leftData = value; StateHasChanged(); }
+    }
+    [Parameter] public string RightData
+    {
+        get { return rightData; }
+        set { rightData = value; StateHasChanged(); }
+    }
+
+
+
+    #endregion
+
+    #region Public methods
+    public void Left()
+    {
+        currentCount = 0;
+        GetWidthWithRefresh();
+    }
+    public void Right()
+    {
+        currentCount = 1000;
+        GetWidthWithRefresh();
+    }
+    public void Increment()
+    {
+
+    }
+    public void Decrement()
+    {
+
+    }
+    public void Up()
+    {
+
+    }
+    public void Down()
+    {
+
+    }
+    #endregion
+
+    void toggle()
+    {
+        ShowButtons = !ShowButtons;
+        StateHasChanged();
+    }
 
     protected override void OnInitialized()
     {
@@ -73,49 +197,97 @@
 
     }
 
-    private void OnReset()
+
+
+
+    //private void OnTextChanged(ChangeEventArgs e)
+    //{
+    //    Console.WriteLine(e.Value.GetType());
+    //    Console.WriteLine(e.Value);
+    //    if (e.Value is string s)
+    //    {
+    //        int value = 0;
+    //        bool rv = int.TryParse(s, out value);
+    //        if (rv)
+    //        {
+    //            if (currentCount == value) return;
+    //            currentCount = value;
+    //            GetWidthWithRefresh();
+    //        }
+    //        else
+    //        {
+    //            GetWidthWithRefresh();
+    //        }
+    //    }
+    //    // GetWidthWithRefresh();
+    //}
+
+    //private void OnRightChanged(ChangeEventArgs e)
+    //{
+    //    Console.WriteLine(e.Value.GetType());
+    //    Console.WriteLine(e.Value);
+    //    if (e.Value is string s)
+    //    {
+    //        double value = 0;
+    //        bool rv = double.TryParse(s, out value);
+    //        if (rv)
+    //        {
+    //            if (left == value) return;
+    //            left = value;
+    //            OnGetWidth();
+    //            left = value;
+    //            StateHasChanged();
+
+    //        }
+    //        else
+    //        {
+    //            GetWidthWithRefresh();
+    //        }
+    //    }
+    //    // GetWidthWithRefresh();
+    //}
+
+    void show()
     {
-        currentCount = 0;
-        GetWidthWithRefresh();
-        // StateHasChanged();
+        ShowButtons = true;
 
     }
 
-    private void OnTextChanged(ChangeEventArgs e)
+    void hide()
     {
-        Console.WriteLine(e.Value.GetType());
-        Console.WriteLine(e.Value);
-        if (e.Value is string s)
-        {
-            int value = 0;
-            bool rv = int.TryParse(s, out value);
-            if (rv)
-            {
-                if (currentCount == value) return;
-                currentCount = value;
-                GetWidthWithRefresh();
-            }
-            else
-            {
-                GetWidthWithRefresh();
-            }
-        }
-        // GetWidthWithRefresh();
+        ShowButtons = false;
     }
 
     private void OnElapsed(object sender, ElapsedEventArgs e)
     {
-        Countdown--;
 
-        if (Countdown <= 0)
+
+        if (updirection)
         {
             IncrementCount();
-            if (currentCount == 100)
+            if (currentCount >= 1000)
             {
                 theTimer.Enabled = false;
-                return;
+                Console.WriteLine("Edge Hit up Before");
+                OnEdgeHit.InvokeAsync(this);
+                 Console.WriteLine("Edge Hit up after");
+
             }
-            Countdown = 10;
+
+        }
+        else
+        {
+            DecrementCount();
+            if (currentCount <= 0)
+            {
+                theTimer.Enabled = false;
+                 Console.WriteLine("Edge Hit down before");
+
+                OnEdgeHit.InvokeAsync(this);
+                       Console.WriteLine("Edge Hit down after");
+
+            }
+
         }
         Task t = GetWidthWithRefresh();
 
@@ -136,12 +308,12 @@
 
         leftwidth = await GetWidth("getleftwidth");
 
-        totalwidth = outer - rightwidth - leftwidth;
+        totalwidth = outer - rightwidth - rightwidth - leftwidth + 10.76;
 
 
 
-        ratio = (100 * ((100.0 - currentCount - (10 - Countdown) / 10.0) / 100.0));
-        right = (totalwidth * (ratio / 100.0));
+        ratio = (currentCount / 1000.0);
+        left = (totalwidth * ratio) - 4.55;
         //amounttoadd = (int)( (outer-rightwidth)/100.0);
 
 
@@ -162,9 +334,10 @@
     private void IncrementCount()
     {
 
-        if (100 > currentCount)
+        if (1000 > currentCount)
         {
             currentCount++;
+            OnCurrentChanged.InvokeAsync (this);
             GetWidthWithRefresh();
         }
 
@@ -176,6 +349,7 @@
         if (0 < currentCount)
         {
             currentCount--;
+            OnCurrentChanged.InvokeAsync (this);
             GetWidthWithRefresh();
         }
 
@@ -183,15 +357,25 @@
 
     }
 
-    private void StartCount()
+    private void UpCount()
     {
         theTimer.Interval = 10;
         theTimer.Enabled = true;
+        updirection = true;
+        theTimer.Start();
+    }
+
+    private void DownCount()
+    {
+        theTimer.Interval = 10;
+        theTimer.Enabled = true;
+        updirection = false;
         theTimer.Start();
     }
     private void StopCount()
     {
         theTimer.Enabled = false;
+
 
     }
 }

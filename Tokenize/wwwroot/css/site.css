@@ -3,38 +3,46 @@
  
 .border-black {
     border-style:solid;
-    border-width:thick;
+    border-width:1px;
     border-color:black;
 }
 .border-red {
     border-style: solid;
-    border-width: thick;
+    border-width: 1px;
     border-color: red;
 }
 .border-green {
     border-style: solid;
-    border-width: thick;
+    border-width: 1px;
     border-color: greenyellow;
 }
 .border-aqua {
     border-style: solid;
-    border-width: thick;
+    border-width: 1px;
     border-color: aqua;
 }
 .border-yellow {
     border-style: solid;
-    border-width: thick;
+    border-width: 1px;
     border-color: yellow;
 }
 .border-purple {
     border-style: solid;
-    border-width: thick;
+    border-width: 1px;
     border-color: purple;
 }
 .border-orange {
     border-style: solid;
-    border-width: thick;
+    border-width: 1px;
     border-color: orange;
+}
+.visibilityhidden {
+ display:none;
+ visibility: hidden;
+}
+.visibilityvisible {
+    display:initial;
+  visibility:visible;
 }
 
 
