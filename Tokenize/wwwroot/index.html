@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Tokenize</title>
+    <base href="/" />
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="manifest.json" rel="manifest" />
+</head>
+
+<body>
+    <app>Loading...</app>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script>
+        window.getouterwidth = () => {
+            //alert("getouterwidth");
+
+            var x = window.document.getElementById("outer").getBoundingClientRect().width;
+            return x;
+        };
+        window.getrightwidth = () => {
+            //alert("getinnerwidth");
+            var x = window.document.getElementById("rightitem").getBoundingClientRect().width;
+            return x;
+        };
+          window.getleftwidth = () => {
+            //alert("getinnerwidth");
+              var x = window.document.getElementById("leftitem").getBoundingClientRect().width;;
+              return x;
+        };
+         window.getWindowWidth = () => {
+            //alert("getinnerwidth");
+             var x = window.ClientRect.clientWidth;
+             return x;
+        };
+       
+    </script>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+</body>
+
+</html>

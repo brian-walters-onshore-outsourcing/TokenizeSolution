@@ -1,0 +1,197 @@
+﻿@page "/"
+@using System.Timers;
+@inject IJSRuntime  ijsr
+
+
+
+<h1>Counter</h1>
+<div id="outer"  style="overflow:hidden" class="border-orange">
+
+    <div id="leftitem" class="d-inline border-red">@leftData</div>
+    <div id="rightitem" class="d-inline border-green" 
+         style="position:relative;left:@(right)px;">
+        @rightData
+    </div>
+
+
+</div>
+@**@
+<p>Current count: @currentCount</p>
+@*    <p>Countdown: @Countdown</p>
+    <p>outer width:@outer</p>
+    <p>left width:@leftwidth</p>
+    <p>rigth width:@rightwidth</p>
+    <p>total width:@totalwidth</p>
+    <p>right:@right</p>
+
+    <p>ratio: @ratio</p>*@
+
+<button class="btn btn-primary" @onclick="IncrementCount">Increment</button>
+<button class="btn btn-primary" @onclick="DecrementCount">Decrement</button>
+<button class="btn btn-primary" @onclick="StartCount">Start</button>
+<button class="btn btn-primary" @onclick="StopCount">Stop</button>
+<button class="btn btn-primary" @onclick="OnGetWidth">Get Widths</button>
+<button class="btn btn-primary" @onclick="OnReset">Reset</button>
+<input type="text" value="@currentCount" @oninput="@((ChangeEventArgs __e)=> OnTextChanged(__e))"/>
+
+
+@code {
+    private Timer theTimer;
+
+    private double outer;
+    private double rightwidth;
+    private double leftwidth;
+    private double totalwidth;
+
+    private int currentCount = 0;
+    private int Countdown = 10;
+    private string leftData = "XXXXX";
+    private string rightData = "R";
+    private double right = 0;
+    // private int amounttoadd = 1;
+    private double ratio;
+
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        theTimer = new Timer();
+
+        theTimer.AutoReset = true;
+        theTimer.Elapsed += OnElapsed;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            GetWidthWithRefresh();
+        }
+        base.OnAfterRender(firstRender);
+
+    }
+
+    private void OnReset()
+    {
+        currentCount = 0;
+        GetWidthWithRefresh();
+        // StateHasChanged();
+
+    }
+
+    private void OnTextChanged(ChangeEventArgs e)
+    {
+        Console.WriteLine(e.Value.GetType());
+        Console.WriteLine(e.Value);
+        if (e.Value is string s)
+        {
+            int value = 0;
+            bool rv = int.TryParse(s, out value);
+            if (rv)
+            {
+                if (currentCount == value) return;
+                currentCount = value;
+                GetWidthWithRefresh();
+            }
+            else
+            {
+                GetWidthWithRefresh();
+            }
+        }
+        // GetWidthWithRefresh();
+    }
+
+    private void OnElapsed(object sender, ElapsedEventArgs e)
+    {
+        Countdown--;
+
+        if (Countdown <= 0)
+        {
+            IncrementCount();
+            if (currentCount == 100)
+            {
+                theTimer.Enabled = false;
+                return;
+            }
+            Countdown = 10;
+        }
+        Task t = GetWidthWithRefresh();
+
+    }
+
+    async Task GetWidthWithRefresh()
+    {
+        await OnGetWidth();
+        StateHasChanged();
+    }
+
+    async Task OnGetWidth()
+    {
+
+        outer = await GetWidth("getouterwidth");
+
+        rightwidth = await GetWidth("getrightwidth");
+
+        leftwidth = await GetWidth("getleftwidth");
+
+        totalwidth = outer - rightwidth - leftwidth;
+
+
+
+        ratio = (100 * ((100.0 - currentCount - (10 - Countdown) / 10.0) / 100.0));
+        right = (totalwidth * (ratio / 100.0));
+        //amounttoadd = (int)( (outer-rightwidth)/100.0);
+
+
+
+
+
+
+
+    }
+
+    async Task<double> GetWidth(string s)
+    {
+        return await ijsr.InvokeAsync<double>(s);
+
+
+    }
+
+    private void IncrementCount()
+    {
+
+        if (100 > currentCount)
+        {
+            currentCount++;
+            GetWidthWithRefresh();
+        }
+
+
+    }
+
+    private void DecrementCount()
+    {
+        if (0 < currentCount)
+        {
+            currentCount--;
+            GetWidthWithRefresh();
+        }
+
+
+
+    }
+
+    private void StartCount()
+    {
+        theTimer.Interval = 10;
+        theTimer.Enabled = true;
+        theTimer.Start();
+    }
+    private void StopCount()
+    {
+        theTimer.Enabled = false;
+
+    }
+}
