@@ -1,0 +1,32 @@
+﻿@page "/"
+
+
+    <input class="col-11 border-red border-3 col-12" type="Text" @bind="@Data" />
+    <label class="col-11">Type the data to Parse here, then click 'Start parsing'</label>
+    <hr class="col-11" />
+    
+
+
+<div class="border-orange border-10">
+    <Parser InjectMe="InjectParser" />
+</div>
+
+<hr class="col-11" />
+
+<button class="btn btn-success" @onclick="Start" >Start Parsing</button>
+
+@code {
+    private Parser myParser { get; set; }
+    void InjectParser(Parser it) { myParser = it; }
+    public string Data { get; set; }
+    public string ParsedData { get; set; }
+
+
+    void Start()
+    {
+        Console.WriteLine("Start Parsing....");
+        Console.WriteLine($"Data is{ Data}");
+        myParser.DataToParse = Data;
+        myParser.Start(5);
+    }
+}

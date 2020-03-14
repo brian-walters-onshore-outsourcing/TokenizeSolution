@@ -1,10 +1,10 @@
-﻿@page "/"
+﻿@page "/counter"
 @using System.Timers;
 @inject IJSRuntime  ijsr
-<div id="outer" style="overflow:hidden" class="@outerborder">
+<div id="outer" style="overflow:hidden" class="@outerborder border-1">
 
-    <div id="leftitem" class="d-inline @leftborder" @onclick="toggle">@leftData</div>
-    <div id="rightitem" class="d-inline @rightborder"
+    <div id="leftitem" class="d-inline border-1 @leftborder" @onclick="toggle">@leftData</div>
+    <div id="rightitem" class="d-inline border-1 @rightborder"
          style="position:relative;left:@(left)px;">
         @rightData
     </div>
@@ -45,8 +45,8 @@
 
     private int currentCount = 0;
 
-    private string leftData = "XX";
-    private string rightData = "B";
+    private string leftData = "";
+    private string rightData = "";
     private double left = 0;
 
     private double ratio;
@@ -85,11 +85,17 @@
             }
         }
     }
+    [Parameter] public Action<Counter> InjectMe { get; set; }
+
+   
+      
+   
 
     [Parameter] public Action<Counter,int,int> OnCurrentChanged { get; set; }
     [Parameter] public Action<Counter,string,string> OnLeftItemChanged { get; set; }
     [Parameter] public Action<Counter,string,string> OnRightItemChanged { get; set; }
     [Parameter] public Action<Counter,Edge> OnEdgeHit { get; set; }
+    [Parameter] public int Speed { get; set; } = 10;
 
     [Parameter] public string Name { get; set; }
 
@@ -135,7 +141,8 @@
     [Parameter] public string RightData
     {
         get { return rightData; }
-        set { rightData = value; StateHasChanged(); }
+        set { rightData = value; Console.WriteLine($"counter.RightData set to '{value}'");
+            StateHasChanged(); }
     }
 
 
@@ -143,10 +150,20 @@
     #endregion
 
     #region Public methods
+    public void MoveLeft(int speed)
+    {
+        Speed = speed;
+        MoveLeft();
+    }
     public void Left()
     {
         currentCount = 0;
         GetWidthWithRefresh();
+    }
+    public void MoveRight(int speed)
+    {
+        Speed = speed;
+        MoveRight();
     }
     public void Right()
     {
@@ -185,7 +202,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-
+        InjectMe?.Invoke(this);
         theTimer = new Timer();
 
         theTimer.AutoReset = true;
@@ -364,7 +381,7 @@
 
     private void UpCount()
     {
-        theTimer.Interval = 10;
+        theTimer.Interval = Speed;
         theTimer.Enabled = true;
         updirection = true;
         theTimer.Start();
@@ -372,7 +389,7 @@
 
     private void DownCount()
     {
-        theTimer.Interval = 10;
+        theTimer.Interval = Speed;
         theTimer.Enabled = true;
         updirection = false;
         theTimer.Start();

@@ -1,0 +1,60 @@
+﻿@page "/parser"
+<Counter Name="Main" ShowButtons="false"  InjectMe="InjectCounter" OnEdgeHit="EdgeHit"/>
+
+@DataToParse
+
+@code {
+    private System.Text.StringBuilder myDataToParse = new System.Text.StringBuilder();
+    [Parameter] public string DataToParse {
+        get
+        {
+            return myDataToParse.ToString();
+        }
+
+        set
+        {
+            myDataToParse.Clear();
+            myDataToParse.Append(value);
+        }
+    }
+    [Parameter] public Action<Parser> InjectMe { get; set; }
+    Counter myCounter { get; set; }
+
+
+    void InjectCounter(Counter it) { myCounter = it; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        InjectMe?.Invoke(this);
+    }
+
+    public void EdgeHit(Counter it, Counter.Edge e)
+    {
+        it.LeftData += it.RightData;
+
+        Start(myCounter.Speed);
+        StateHasChanged();
+    }
+
+    public void Start(int speed=1)
+    {
+        if (myDataToParse.Length > 0)
+        {
+            string data = myDataToParse[0].ToString();
+            myDataToParse.Remove(0, 1);
+            StateHasChanged();
+            Console.WriteLine($"Data to Parse[0]='{data}'");
+            myCounter.RightData = data;
+        }
+        else
+        {
+            myCounter.RightData = "";
+            myCounter.Right();
+            return;
+        }
+        myCounter.Speed = speed;
+        myCounter.Right();
+        myCounter.MoveLeft();
+    }
+}
