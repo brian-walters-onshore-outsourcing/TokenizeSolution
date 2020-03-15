@@ -1,0 +1,50 @@
+1    `int` `i`;`
+2    `i`=`12`;`
+3    `i`++`;`
+4    `string` `s`=`"this is a test"`;`
+5    `char` `c`=`'a'`;`
+6    `Console`.`WriteLine`(`i`)`;`
+
+1    whitespace
+1    letter:identifier:int:keyword
+1    whitespace
+1    letter:identifier:i:unknown:newlocalvariable
+1    punctuator:;:eol
+2    whitespace
+2    letter:identifier:i:known:localvariable
+2    operator:=:assignment
+2    number:literal:integer
+2    punctuator:;:eol
+3    whitespace
+3    letter:identifier::i:known:localvariable
+3    operator:++:increment
+3    punctuator:eol
+4    whitespace
+4    letter:identifier:string:keyword
+4    whitespace
+4    letter:identifier:s:unknown:newlocalvariable
+4    operator:=:assignment
+4    punctuator:":startstringliteral
+4        anybut/":literal:string
+4    punctuator:":endstringliteral
+4    punctuator:;:eol
+5    whitespace
+5    letter:identifier:char:keyword
+5    whitespace
+5    letter:identifier:c:unknown:newlocalvariable
+5    whitespace
+5    operator:=:assignment
+5    punctuator:':startcharliteral
+5         anybut:/':literalchar
+5    punctuator:':endcharliteral
+5    punctuator:eol
+6    whitespace
+6    letter:identifier:Console:known:type
+6    operator:.:memberaccess
+6    letter:identifier:WriteLine:known:member
+6    punctuator:openparen:method
+6       letter:identifier:i:known:localvariable:actualargumentvsformalparameter
+6    punctuator:closeparen:method
+6    punctuator:eol
+7    whitespace
+7    endoffile

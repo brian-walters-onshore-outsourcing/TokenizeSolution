@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokenize", "Tokenize\Tokenize.csproj", "{B5A1F9D0-D5B3-4FB0-BA2B-35A064002BAF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyANTLRparser", "MyANTLRparser\MyANTLRparser.csproj", "{327135BB-90AE-4501-AE65-F94732A7214A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParseTester", "ParseTester\ParseTester.csproj", "{6FF648C3-AFE1-43EC-9512-78D3990B50B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{B5A1F9D0-D5B3-4FB0-BA2B-35A064002BAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5A1F9D0-D5B3-4FB0-BA2B-35A064002BAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5A1F9D0-D5B3-4FB0-BA2B-35A064002BAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{327135BB-90AE-4501-AE65-F94732A7214A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{327135BB-90AE-4501-AE65-F94732A7214A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{327135BB-90AE-4501-AE65-F94732A7214A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{327135BB-90AE-4501-AE65-F94732A7214A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FF648C3-AFE1-43EC-9512-78D3990B50B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FF648C3-AFE1-43EC-9512-78D3990B50B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FF648C3-AFE1-43EC-9512-78D3990B50B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FF648C3-AFE1-43EC-9512-78D3990B50B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
