@@ -6,7 +6,7 @@ namespace MyANTLRparser
 {
     #region Types
 
-    [Flags] public enum charTypes
+    [Flags] public enum charType
     {
         whitespace                  = 1, // done
         letter                      = 2, // done
@@ -31,13 +31,14 @@ namespace MyANTLRparser
         punctuation                 =256*4096, // done
         realnumberpart              =1024*4096, // done
         integerpart                 =2048*4096, //done 
+        endoffile                   =4096*4096, // done
         
 
 
 
     }
 
-    public static class csharpclassifier
+    public static class csharpclassifier 
     {
         static csharpclassifier()
         {
@@ -58,41 +59,41 @@ namespace MyANTLRparser
             
             
         }
-       public static charTypes IsWhatType(this char c)
+       public static charType IsWhatType(this char c)
         {
-            charTypes rv = (charTypes)0;
+            charType rv = (charType)0;
             switch(c)
             {
-                case ('_'): return charTypes.underscore|charTypes.validfirst4identifier|charTypes.validsecond4identifier|charTypes.letterordigitor_;
+                case ('_'): return charType.underscore|charType.validfirst4identifier|charType.validsecond4identifier|charType.letterordigitor_;
                 case ('1'):
-                case ('0'): return charTypes.digit | charTypes.binarydigit | charTypes.hexdigit | charTypes.validsecond4identifier | charTypes.letterordigitor_ | charTypes.realnumberpart | charTypes.integerpart;
+                case ('0'): return charType.digit | charType.binarydigit | charType.hexdigit | charType.validsecond4identifier | charType.letterordigitor_ | charType.realnumberpart | charType.integerpart;
                 case 'A': case 'a': case 'B': case 'b': case 'C': case 'c':
-                    return charTypes.hexdigit | charTypes.letter | charTypes.letterordigit |
-                           charTypes.letterordigitor_ | charTypes.validfirst4identifier | charTypes.validsecond4identifier;
+                    return charType.hexdigit | charType.letter | charType.letterordigit |
+                           charType.letterordigitor_ | charType.validfirst4identifier | charType.validsecond4identifier;
                 case 'M': case 'm':
-                    return charTypes.letter | charTypes.letterordigit |
-                            charTypes.letterordigitor_ | charTypes.validfirst4identifier | charTypes.validsecond4identifier | charTypes.realnumberpart ;
+                    return charType.letter | charType.letterordigit |
+                            charType.letterordigitor_ | charType.validfirst4identifier | charType.validsecond4identifier | charType.realnumberpart ;
                  case 'D': case 'd':case 'F': case 'f':
-                    return charTypes.hexdigit | charTypes.letter | charTypes.letterordigit |
-                            charTypes.letterordigitor_ | charTypes.validfirst4identifier | charTypes.validsecond4identifier | charTypes.realnumberpart;
-                case 'E': case 'e': return charTypes.exponent |
-                    charTypes.hexdigit | charTypes.letter | charTypes.letterordigit |
-                    charTypes.letterordigitor_ | charTypes.validfirst4identifier |charTypes.validsecond4identifier | charTypes.realnumberpart;
-                case '-': return charTypes.minus | charTypes.operatordigit | charTypes.symbol | charTypes.realnumberpart | charTypes.integerpart|charTypes.symbol;
-                case '(': case '[': case '{': return charTypes.symbol | charTypes.opening|charTypes.declarationsyntax ;
-                case '<': return charTypes.symbol | charTypes.opening | charTypes.declarationsyntax | charTypes.operatordigit;
-                case ')': case ']': case '}': return charTypes.symbol | charTypes.closing | charTypes.declarationsyntax;
-                case '>': return charTypes.symbol | charTypes.closing | charTypes.declarationsyntax | charTypes.operatordigit;
-                case '"': case '\'': return charTypes.symbol | charTypes.quote ;
+                    return charType.hexdigit | charType.letter | charType.letterordigit |
+                            charType.letterordigitor_ | charType.validfirst4identifier | charType.validsecond4identifier | charType.realnumberpart;
+                case 'E': case 'e': return charType.exponent |
+                    charType.hexdigit | charType.letter | charType.letterordigit |
+                    charType.letterordigitor_ | charType.validfirst4identifier |charType.validsecond4identifier | charType.realnumberpart;
+                case '-': return charType.minus | charType.operatordigit | charType.symbol | charType.realnumberpart | charType.integerpart|charType.symbol;
+                case '(': case '[': case '{': return charType.symbol | charType.opening|charType.declarationsyntax ;
+                case '<': return charType.symbol | charType.opening | charType.declarationsyntax | charType.operatordigit;
+                case ')': case ']': case '}': return charType.symbol | charType.closing | charType.declarationsyntax;
+                case '>': return charType.symbol | charType.closing | charType.declarationsyntax | charType.operatordigit;
+                case '"': case '\'': return charType.symbol | charType.quote ;
                  case ';': case '\\': case '@': case '#': case '$': case ',':
-                    return charTypes.punctuation | charTypes.symbol | charTypes.special;
-                case '.': return charTypes.punctuation | charTypes.symbol | charTypes.operatordigit | charTypes.realnumberpart;
+                    return charType.punctuation | charType.symbol | charType.special;
+                case '.': return charType.punctuation | charType.symbol | charType.operatordigit | charType.realnumberpart;
                 case 'U': case 'u': case 'L': case 'l':
-                    return charTypes.letter | charTypes.letterordigit |
-                        charTypes.letterordigitor_ | charTypes.integerpart;
-                case ':': return charTypes.punctuation | charTypes.symbol | charTypes.operatordigit | charTypes.declarationsyntax;
+                    return charType.letter | charType.letterordigit |
+                        charType.letterordigitor_ | charType.integerpart;
+                case ':': return charType.punctuation | charType.symbol | charType.operatordigit | charType.declarationsyntax;
                 case '?':
-                    return charTypes.symbol | charTypes.operatordigit | charTypes.declarationsyntax;
+                    return charType.symbol | charType.operatordigit | charType.declarationsyntax;
                 case '+':
                 case '!':
                 case '%':
@@ -103,18 +104,30 @@ namespace MyANTLRparser
                 case '|':
                 case '/':
                 case '~':
-                    return charTypes.symbol | charTypes.operatordigit;
+                    return charType.symbol | charType.operatordigit;
+                case '\uffff':
+                    return charType.endoffile;
              }
-            if (char.IsWhiteSpace(c))  return charTypes.whitespace;
-            if (char.IsDigit(c)) return charTypes.digit | charTypes.letterordigit | charTypes.letterordigitor_ | charTypes.validsecond4identifier ;
-            if (char.IsLetter(c)) return charTypes.letter | charTypes.letterordigit | charTypes.letterordigitor_ | charTypes.validsecond4identifier | charTypes.validfirst4identifier;
+            if (char.IsWhiteSpace(c))  return charType.whitespace;
+            if (char.IsDigit(c)) return charType.digit | charType.letterordigit | charType.letterordigitor_ | charType.validsecond4identifier ;
+            if (char.IsLetter(c)) return charType.letter | charType.letterordigit | charType.letterordigitor_ | charType.validsecond4identifier | charType.validfirst4identifier;
+            
 
 
             throw new Exception($"Unrecognized character '{c}' value: {(int)c}");
         }
-       public static bool IsAnyOfTheseTypes(this char c, params charTypes[] types)
+       public static bool IsAnyOfTheseTypes(this char c, params charType[] types)
         {
-            charTypes ct = c.IsWhatType();
+            charType ct = c.IsWhatType();
+            foreach (var type in types)
+            {
+                if (type == (ct & type)) return true;
+            }
+            return false;
+        }
+        public static bool IsAnyOfTheseTypes(this charType ct, params charType[] types)
+        {
+            
             foreach (var type in types)
             {
                 if (type == (ct & type)) return true;
@@ -122,12 +135,35 @@ namespace MyANTLRparser
             return false;
         }
 
-       static  HashSet<string> Keywords ;
+        public static bool IsAnyOfTheseTypes(this tokenType ct, params tokenType[] types)
+        {
+
+            foreach (var type in types)
+            {
+                if (type == (ct & type)) return true;
+            }
+            return false;
+        }
+
+        public static bool IsAnyOfTheseTypes(this operatorType ct, params operatorType[] types)
+        {
+
+            foreach (var type in types)
+            {
+                if (type == (ct & type)) return true;
+            }
+            return false;
+        }
+
+        static  HashSet<string> Keywords ;
         public static bool IsKeyword(this string identifier)
         {
             return Keywords.Contains(identifier);
         }
+
     }
+
+   
     public enum elementType
     {
        
@@ -141,24 +177,30 @@ namespace MyANTLRparser
     {
     
         literal                     = 1,
-        literalstring               = 2,
-        literalnumber               = 4,
+        literalString               = 2,
+        literalNumber               = 4,
         name                        = 8,
 
         literalInteger              = 1 + 4 + 16,
         literalReal                 = 1 + 4 + 32,
         
         literalInterpolatedString   = 1 + 2 + 64,
-        literalverbatumString       = 1 + 2 + 128,
+        literalVerbatumString       = 1 + 2 + 128,
         literalChar                 = 1 + 256,
         
 
         identifier                  = 512,
         keyword                     = 1024,
-        OperatorPunctuator          = 2048,
+ //       operatorPunctuator          = 2048,  // how is this different from below???
         @operator                   = 2048 + 4096,
         punctuator                  = 2048 + 2*4096,
         balanced                    = 2048 + 4*4096,
+
+        literalIntegerHex           = 4096 + 1 + 4  + 16,
+        literalIntegerBinary        = 2*4096 + 1 + 4 + 16,
+        invalidToken                = 4*4096,
+
+            
 
 
     }
@@ -204,7 +246,30 @@ namespace MyANTLRparser
         }
         public string Data { get; }
         public elementType ElementType { get; }
-        
+
+        #region tostring implementation
+        protected virtual string MyName()
+        {
+            return "ParsedElement";
+        }
+        protected virtual string MyFirstRest()
+        {
+            return $"Type={ElementType,20}";
+        }
+        protected virtual string MyMiddleRest()
+        {
+            return $" Data='{Data}'";
+        }
+        protected virtual string MyLastRest()
+        {
+            return "";
+        }
+        public override string ToString()
+        {
+            return $"{MyName(),20}:{MyFirstRest()}{MyMiddleRest()}{MyLastRest()}";
+        }
+        #endregion tostring impl
+
     }
 
     public class ParsedToken : ParsedElement
@@ -216,6 +281,26 @@ namespace MyANTLRparser
         }
 
         public tokenType TokenType { get; }
+
+        #region tostring implementation
+        protected override string MyName()
+        {
+            return "ParsedToken";
+        }
+        //protected override string MyFirstRest()
+        //{
+        //    return $"";
+        //}
+        //protected override string MyMiddleRest()
+        //{
+        //    return $"";
+        //}
+        protected override string MyLastRest()
+        {
+            return $"{base.MyLastRest()} TokenType:{TokenType}";
+        }
+        
+        #endregion tostring impl
     }
 
     public class ParsedOperator : ParsedToken
@@ -227,6 +312,26 @@ namespace MyANTLRparser
             }
 
         public operatorType OperatorType { get; }
+
+        #region tostring implementation
+        protected override string MyName()
+        {
+            return "ParsedOperator";
+        }
+        //protected override string MyFirstRest()
+        //{
+        //    return $"";
+        //}
+        //protected override string MyMiddleRest()
+        //{
+        //    return $"";
+        //}
+        protected override string MyLastRest()
+        {
+            return $"{base.MyLastRest()} OperatorType:{OperatorType}";
+        }
+
+        #endregion tostring impl
     }
 
     public class StateTransition
@@ -235,6 +340,8 @@ namespace MyANTLRparser
  //       public int PriorState { get;  set; }
         public string NewState { get; set; }
         public ParsedElement ElementFound { get; set; }
+
+     
        
 
 
@@ -283,9 +390,11 @@ namespace MyANTLRparser
         private Dictionary<string, State> StateMachine = new Dictionary<string, State>();
         private string currentState = "";
 
+        bool pushed = false;
+        char pushchar;
+        int position = -1;
+        #endregion
 
-        #endregion     
-        
         #region private properties
 
 
@@ -297,38 +406,88 @@ namespace MyANTLRparser
         {
             Log?.Invoke(s);
         }
+
+       
+
+        public bool Push(char c, bool throwexception=true)
+        {
+          //  log($"Pushing '{c}' value:{(int)c}\n");
+            if (pushed)
+            {
+                if (('\uffff' == pushchar)  && ('\uffff' ==c))
+                {
+                    return true;
+                }
+                if (throwexception)
+                {
+                    throw new Exception($"can't push when buffer is already occupied: it has '{pushchar}' value:{(int)pushchar}, trying to push '{c}' value {(int)c}");
+                }
+                else
+                {
+                    return false;
+                }
+                
+            }
+            pushed = true;
+            pushchar = c;
+            return true;
+        }
+
+       
         bool Next(out char c)
         {
+            if (pushed)
+            {
+             //   log($"popping '{pushchar}' value:{(int)pushchar}\n");
+                pushed = false;
+                c = pushchar;
+                pushchar = '\0';
+                if ('\uffff' == c)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+
+            }
+            position++;
             int i = streamBeingParsed.Read();
             if (-1 == i)
             {
-                c = '\0'; return false;
+                Push((char)i);
             }
-            else
-            {
-                c = (char)i;
-              
                 
-                return true;
-            }
+            c = (char)i;
+            return true;
+            
         }
 
   
    
-        private string Transition(char c)
+        private string Transition(char c)   
         {
-            log($"Parsing '{c}' value:{(int)c,4}");
+            
+            char nextc = Peek();
+            log($"Parsing '{c}' value:{(int)c,4} position:{position,5} next:'{nextc}'");
             State s;
             bool found = StateMachine.TryGetValue(currentState, out s);
             if (found)
             {
+              
                 log($"Transition:{s.Name,20}->");
                 StateTransition st = s.Execute(s,c);
                 log($"{st?.NewState??"NULL",20}\n");
                 if (null != st?.ElementFound)
                 {
-                    log($"Consumed: '{unconsumedCharacters}'\n");
+                 //   log($"Consumed before push: '{unconsumedCharacters}'\n");
+                    Push(c);
+                 //   log($"Consumed after push: '{unconsumedCharacters}'\n");
+
+                   // log($"data:'{st.ElementFound.Data}'");
                     collectedCharacters.Append(unconsumedCharacters);
+                    unconsumedCharacters.Clear();
                     if (st.ElementFound is ParsedElement pe)
                     {
                         log($"ParsedElement:{pe.Data}\n");
@@ -347,7 +506,7 @@ namespace MyANTLRparser
                         log($"ParsedOperator:{po.Data}\n");
                         OperatorParsed?.Invoke(po);
                     }
-                    unconsumedCharacters.Clear();
+                   
                 }
                 else
                 {
@@ -397,7 +556,11 @@ namespace MyANTLRparser
             }
         }
 
-        public string UnconsumedData { get { return unconsumedCharacters.ToString(); } }
+        public string UnconsumedData { get {
+                
+                    return unconsumedCharacters.ToString();
+               
+            } }
 
         public Action<string> Log { get; set; }
 
@@ -412,6 +575,25 @@ namespace MyANTLRparser
         #endregion
 
         #region public methods
+
+        public void Reset(string s)
+        {
+            Reset(new System.IO.StringReader(s));
+        }
+        public void Reset(System.IO.TextReader r)
+        {
+            parsed = false;
+            parsing = false;
+            streamBeingParsed = r;
+            collectedCharacters.Clear();
+            unconsumedCharacters.Clear();
+            parsedElements.Clear();
+            parsedTokens.Clear();
+            currentState = "";
+            pushed = false;
+            pushchar = '\0';
+            position = -1;
+        }
 
         public bool ParseAll()
         {
@@ -467,16 +649,27 @@ namespace MyANTLRparser
             };
         }
 
-        public bool Peek(out char c)
+
+        public char Peek()
         {
-            int i = streamBeingParsed.Peek();
-            if (-1 == 1)
+            bool b;
+            return Peek(out b);
+        }
+        public char Peek(out bool b)
+        {
+            if (pushed)
             {
-                c = '\0'; return false;
+                b = true;
+                return pushchar;
+            }
+            int i = streamBeingParsed.Peek();
+            if (-1 == i)
+            {
+                b = false; return '\uffff';
             }
             else
             {
-                c = (char)i; return true;
+                b = true; return (char)i; ;
             }
         }
 

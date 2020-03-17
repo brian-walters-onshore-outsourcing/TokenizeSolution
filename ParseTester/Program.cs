@@ -7,56 +7,53 @@ namespace ParseTester
     {
         static void Main(string[] args)
         {
-            Parser p = new Parser(" .\t.a.b.c.1.2.3.0.\\.@.#.$");
-            var entry = new StateTransition() { NewState = "" };
+            double d = .1230;
+            //Parser p = new Parser();
+            // Parser p = new Parser("1 12 123 i++ ++i i-- --i a+b +a -b ");
+            Parser p = new Parser(
+               // ".1230 1e12 1.2e30 1.23e12"
+               // " \t abc if _else then -1 +230 i++ --j \\ @ # $"  
+               "@ # $"
+
+              // ".1230"
+                );
             p.Log = Console.Write;
-            p.AddStates(p.CreateState("", (s, c) =>
-            {
-                if (char.IsWhiteSpace(c))
-                {
-                    return new StateTransition() { NewState = "whitespace" };
-                }
- 
-                else if ('_'==c)
-                {
-                    return new StateTransition() { NewState = "identifier" };
-                }
-               
-                else if ('0' == c)
-                {
-                    return new StateTransition() { NewState = "zero" };
-                }
-                else if ('\\' == c)
-                {
-                    return new StateTransition() { NewState = "slash" };
-                }
-                else if (char.IsDigit(c))
-                {
-                    return new StateTransition() { NewState = "digitonly" };
-                }
-                else if (char.IsLetter(c))
-                {
-                    return new StateTransition() { NewState = "letteronly" };
-                }
-                else if (c.IsAnyOfTheseTypes(charTypes.symbol ))
-                {
-                    return new StateTransition() { NewState = "symbol" };
-                }
+            p.InitToCSharpStatemachine();
 
-                throw new Exception($"state ''  does not recognize '{c}' value {(int)c}");
-
-            })
-             ,p.CreateState("whitespace", (s, c) => entry)
-             ,p.CreateState("letteronly", (s, c) => entry)
-             ,p.CreateState("identifier", (s, c) => entry)
-             ,p.CreateState("digitonly", (s, c) => entry)
-             ,p.CreateState("zero", (s, c) => entry)
-             ,p.CreateState("slash", (s, c) => entry)
-             ,p.CreateState("symbol", (s, c) => entry)
-
-            );
+          
 
             p.ParseAll();
+            Console.WriteLine("***************************");
+            Console.WriteLine("*****Parsed Elements*******");
+            foreach (var x in p.ParsedElements)
+            {
+                Console.WriteLine(x);
+            }
+            Console.WriteLine("***************************");
+            Console.WriteLine("*********Tokens************");
+            foreach (var x in p.ParsedTokens)
+            {
+                Console.WriteLine(x);
+            }
+            Console.WriteLine("***************************");
+            //Console.ReadLine();
+            //p.Reset(" \t abc if _else then -1 +230 i++ --j \\ @ # $");
+            //p.ParseAll();
+            //Console.WriteLine("***************************");
+            //Console.WriteLine("*****Parsed Elements*******");
+            //foreach (var x in p.ParsedElements)
+            //{
+            //    Console.WriteLine(x);
+            //}
+            //Console.WriteLine("***************************");
+            //Console.WriteLine("*********Tokens************");
+            //foreach (var x in p.ParsedTokens)
+            //{
+            //    Console.WriteLine(x);
+            //}
+            //Console.WriteLine("***************************");
+            //Console.ReadLine();
+
         }
     }
 }
